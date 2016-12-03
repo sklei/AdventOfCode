@@ -13,26 +13,47 @@ namespace Day03
         {
             string input = File.ReadAllText("input.txt");
             //input = "^v^v^v^v^v"; //Testing
-            
-            int[,] grid = new int[input.Length << 1, input.Length << 1];
-            int X = input.Length;
-            int Y = input.Length;
 
-            grid[X, Y]++;
+            Dictionary<Point, int> grid = new Dictionary<Point, int>();
+            Point position = new Point() { X = 0, Y = 0 };
+            grid.Add(position, 1);
 
-            input
-                .ToList()
-                .ForEach(x => 
+            //Testing
+            Point position2 = new Point() { X = 1, Y = 0 };
+
+            int presents = 0;
+            input.ToList().ForEach(x =>
                 {
-                    switch(x)
+                    if (!grid.TryGetValue(position2, out presents))
+                        grid.Add(position, presents);
+
+                    switch (x)
                     {
-                        case '^': Y++; break;
-                        case '>': X++; break;
-                        case 'v': Y--; break;
-                        case '<': X--; break;
+                        case '^': position.Y++; break;
+                        case '>': position.X++; break;
+                        case 'v': position.Y--; break;
+                        case '<': position.X--; break;
                     }
-                    grid[X, Y]++;
+                    
                 });
+
+           
+
+            //input
+            //    .ToList()
+            //    .ForEach(x => 
+            //    {
+            //        switch(x)
+            //        {
+            //            case '^': Y++; break;
+            //            case '>': X++; break;
+            //            case 'v': Y--; break;
+            //            case '<': X--; break;
+            //        }
+
+
+            //        grid[X, Y]++;
+            //    });
 
             var houses = grid.Cast<int>().Where(x => x > 0).Count();
 
@@ -40,5 +61,11 @@ namespace Day03
 
             Console.ReadKey();
         }
+    }
+
+    public struct Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
     }
 }
