@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Day03
+namespace _2015.Day03
 {
     class Program
     {
