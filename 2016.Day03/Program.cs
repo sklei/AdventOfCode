@@ -22,7 +22,22 @@ namespace _2016.Day03
                 .ToArray()
                 .IsValidTriangle());
 
-            Console.WriteLine($"Valid triangles: {validTriangles}");
+            var validTrianglesAsColumns = lines
+                .Select(l => l.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                .Select((s, i) => new {
+                    Index = i / 3,
+                    Numbers = s.Select(n => Int32.Parse(n)).ToArray()
+                })
+                .GroupBy(ian => ian.Index)
+                .Select(iang => iang.Select(ian => ian.Numbers).ToArray())
+                .SelectMany(npg => Enumerable.Range(0, 9).Select(n => npg[n % 3][n / 3])) //Each section is now 3x3
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / 3)
+                .Select(x => x.Select(y => y.Value).ToArray())
+                .Count(x => x.IsValidTriangle());
+
+            Console.WriteLine($"#1 Valid triangles: {validTriangles}");
+            Console.WriteLine($"#2 Valid triangles as colums: {validTrianglesAsColumns}");
             Console.ReadKey();
         }
     }
