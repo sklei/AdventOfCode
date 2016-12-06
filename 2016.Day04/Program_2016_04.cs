@@ -37,17 +37,20 @@ namespace _2016.Day04
             //input =  new string[] { "aaaaa-bbb-z-y-x-123[abxyz]" }; //#1 real room
             //input =  new string[] { "a-b-c-d-e-f-g-h-987[abcde]" }; //#1 real room
             //input =  new string[] { "totally-real-room-200[decoy]" }; //#1 fake room
+            //input =  new string[] { "qzmt-zixmtkozy-ivhz-343[doesn]" }; //#2 very encrypted name
 
             var rooms = input.Select(l => new Room()
             {
-                Name = l.Substring(0, l.LastIndexOf('-')).Replace("-", ""),
+                Name = l.Substring(0, l.LastIndexOf('-')),
                 SectorID = Int32.Parse(l.Substring(l.LastIndexOf('-') + 1, 3)),
                 Checksum = l.Substring(l.IndexOf('[') + 1, 5)
             });
 
-            var realRoomSectorSum = rooms.Where(r => r.IsRealRoom()).Sum(r => r.SectorID);
+            var realRoomSectorSum = rooms.Where(r => r.IsRealRoom).Sum(r => r.SectorID);
+            var northPoleSectorID = rooms.FirstOrDefault(r => r.DecryptedValue.ToLower().StartsWith("north"))?.SectorID;
 
-            Console.WriteLine($"#1 Real room sector sum: {realRoomSectorSum}");
+            Console.WriteLine($"#1 Real room sector sum: {realRoomSectorSum}"); //278221
+            Console.WriteLine($"#2 North Pole sector ID: {northPoleSectorID}");
             Console.ReadKey();
         }
     }
@@ -58,27 +61,46 @@ namespace _2016.Day04
         public int SectorID { get; set; }
         public string Checksum { get; set; }
 
-        public bool IsRealRoom()
+        public bool IsRealRoom
         {
-            var letterGroupsOrdered = Name
-                .GroupBy(letter => letter)
-                .OrderByDescending(letterGroup => letterGroup.Count())
-                .ThenBy(letterGroup => letterGroup.Key)
-                .Take(5)
-                .Select(letterGroup => letterGroup.Key)
-                .Aggregate("", (a,b) =>
-                {
-                    return a + b;
-                });
+            get
+            {
+                var letterGroupsOrdered = Name
+                    .Replace("-", "")
+                    .GroupBy(letter => letter)
+                    .OrderByDescending(letterGroup => letterGroup.Count())
+                    .ThenBy(letterGroup => letterGroup.Key)
+                    .Take(5)
+                    .Select(letterGroup => letterGroup.Key)
+                    .Aggregate("", (a, b) => a + b);
 
-            var result = letterGroupsOrdered == Checksum;
+                var result = letterGroupsOrdered == Checksum;
 
-            return result;
+                return result;
+            }
+        }
+
+        internal String DecryptedValue
+        {
+            get
+            {
+                //Steps, transforms q to v:
+                //var cur = 'q'; //113
+                //var inc = 343 % 26; //5
+                //var cor = ((cur + inc) - 'a') % 26; //21
+                //var nex = 'a' + cor; //118
+
+                string decryptedValue = Name
+                    .Select(c => c == '-' ? ' ' : (char)('a' + ((c + (SectorID % 26)) - 'a') % 26))
+                    .Aggregate("", (a, b) => a + b);
+
+                return decryptedValue;
+            }
         }
 
         public override string ToString()
         {
-            return $"Name: {Name} SectorID: {SectorID} CheckSum: {Checksum} Real: {IsRealRoom()}";
+            return $"Name: {Name} SectorID: {SectorID} CheckSum: {Checksum} Real: {IsRealRoom} DecryptedValue {DecryptedValue}";
         }
     }
 }
