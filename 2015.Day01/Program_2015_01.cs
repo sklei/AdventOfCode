@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace _2015.Day1
 {
-    class Program
+    class Program_2015_01
     {
         static void Main(string[] args)
         {
