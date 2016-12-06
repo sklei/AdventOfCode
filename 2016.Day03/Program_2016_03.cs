@@ -11,10 +11,8 @@ namespace _2016.Day03
     {
         static void Main(string[] args)
         {
-            string input = File.ReadAllText("input.txt");
+            string[] lines = File.ReadAllLines("input.txt");
             //input = "5 10 25"; //#1 should be invalid
-
-            string[] lines = input.Split('\n');
 
             int validTriangles = lines.Count(l => l
                 .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)

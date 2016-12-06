@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,52 @@ namespace _2016.Day04
     {
         static void Main(string[] args)
         {
+            string[] input = File.ReadAllLines("input.txt");
+            //input =  new string[] { "aaaaa-bbb-z-y-x-123[abxyz]" }; //#1 real room
+            //input =  new string[] { "a-b-c-d-e-f-g-h-987[abcde]" }; //#1 real room
+            //input =  new string[] { "totally-real-room-200[decoy]" }; //#1 fake room
+
+            var rooms = input.Select(l => new Room()
+            {
+                Name = l.Substring(0, l.LastIndexOf('-')).Replace("-", ""),
+                SectorID = Int32.Parse(l.Substring(l.LastIndexOf('-') + 1, 3)),
+                Checksum = l.Substring(l.IndexOf('[') + 1, 5)
+            });
+
+            var realRoomSectorSum = rooms.Where(r => r.IsRealRoom()).Sum(r => r.SectorID);
+
+            Console.WriteLine($"#1 Real room sector sum: {realRoomSectorSum}");
+            Console.ReadKey();
+        }
+    }
+
+    internal class Room
+    {
+        public string Name { get; set; }
+        public int SectorID { get; set; }
+        public string Checksum { get; set; }
+
+        public bool IsRealRoom()
+        {
+            var letterGroupsOrdered = Name
+                .GroupBy(letter => letter)
+                .OrderByDescending(letterGroup => letterGroup.Count())
+                .ThenBy(letterGroup => letterGroup.Key)
+                .Take(5)
+                .Select(letterGroup => letterGroup.Key)
+                .Aggregate("", (a,b) =>
+                {
+                    return a + b;
+                });
+
+            var result = letterGroupsOrdered == Checksum;
+
+            return result;
+        }
+
+        public override string ToString()
+        {
+            return $"Name: {Name} SectorID: {SectorID} CheckSum: {Checksum} Real: {IsRealRoom()}";
         }
     }
 }
