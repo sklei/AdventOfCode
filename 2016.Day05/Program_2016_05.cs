@@ -34,17 +34,26 @@ namespace _2016.Day05
 {
     class Program_2016_05
     {
+        static string input = "wtnhxymk";
+
         static void Main(string[] args)
         {
-            string input = "wtnhxymk";
-            //input = "abc"; //TEST #1 - 18f47a30
-            string password = "";
+            //Part1();
+            Part2();
+            
+            Console.ReadLine();
+        }
 
-            for(int i = 0; i < Int32.MaxValue; i++)
+        private static void Part1()
+        {
+            string password = "";
+            //input = "abc"; //TEST #1 - 18f47a30
+
+            for (int i = 0; i < Int32.MaxValue; i++)
             {
                 string md5 = CalculateMD5Hash(input + i.ToString());
 
-                if(md5.StartsWith("00000"))
+                if (md5.StartsWith("00000"))
                 {
                     password += md5[5];
 
@@ -54,7 +63,36 @@ namespace _2016.Day05
             }
 
             Console.WriteLine($"#1 - Password: {password}");
-            Console.ReadLine();
+        }
+
+        private static void Part2()
+        {
+            char[] password = new char[8];
+            //input = "abc"; //TEST #2 - 05ace8e3
+
+            for (int i = 0; i < Int32.MaxValue; i++)
+            {
+                if(i % 100000 == 0)
+                    Console.Write('.');
+
+                string md5 = CalculateMD5Hash(input + i.ToString());
+
+                if (md5.StartsWith("00000"))
+                {
+                    int pos = -1;
+
+                    if (Int32.TryParse(md5[5].ToString(), out pos) && pos < 8 && password[pos] == '\0')
+                    {
+                        char c = md5[6];
+                        password[pos] = c;
+
+                        if (password.All(p => p != '\0'))
+                            break;
+                    }
+                }
+            }
+
+            Console.WriteLine($"#1 - Password: {String.Join("", password)}");
         }
 
         public static string CalculateMD5Hash(string input)
